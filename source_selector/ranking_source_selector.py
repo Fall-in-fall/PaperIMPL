@@ -18,14 +18,16 @@ def simple_ranking_selector(targetTopic,targetTextAll,allSourceDict,gensimDict,s
     #     'G:/data collection/TTSC/TTSC-paper data/Word vector data/vectors/glove.twitter.27B/word2vec_glove.twitter.27B.100d.txt',
     #     binary=False)
     try:
-        targetTopic_vec = vecModel.wv[targetTopic]
+        targetTopic_vec = vecModel.wv[targetTopic.lower()]
     except:
         print '**\nnot find, use zeros vector\n**'
-        targetTopic_vec = np.zeros(model.vector_size)
+        targetTopic_vec = np.zeros(vecModel.vector_size)
         # 如果找不到？待完善
         pass
     # 注意cosine_similarity和term_JSD_sims的传入格式([a1,a2],[b1,b2])，以及输出格式  [ [],... ]
+
     topic_vec_sims = cosine_similarity( [targetTopic_vec],[ s.topic_vec for s in allSourceDict.values() ] )[0]
+
     term_JSD_sims = JSD_sims( [ gensimDict.doc2bow(   flatten( [ text.split() for text in targetTextAll] )  ) ],
                               [s.term_dict for s in allSourceDict.values()])[0]
 
@@ -37,7 +39,7 @@ def simple_ranking_selector(targetTopic,targetTextAll,allSourceDict,gensimDict,s
     avglen_diffs = minmax_scale(avglen_diffs)
 
     # zip将若干个列表元素依次合并为一个元组列表，然后降序排序获得
-    rankList = zip(*[allSourceDict.keys(),topic_vec_sims+term_JSD_sims+avglen_diffs])
+    rankList = zip(*[allSourceDict.keys(),0.5*topic_vec_sims+0.4*term_JSD_sims+0.1*avglen_diffs])
     rankList.sort(key=lambda x:x[1],reverse=True)
     pos_res = []
     neg_res = []

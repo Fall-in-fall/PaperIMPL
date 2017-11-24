@@ -1,5 +1,5 @@
 # -*- encoding:utf-8 -*-
-from bs4 import BeautifulSoup
+
 from nltk.corpus import stopwords
 import pandas as pd
 import numpy as np
@@ -77,7 +77,7 @@ def classify_test_1(train_set,train_label,test_set,test_label,reverseVetorize=Fa
     all.extend(test_set)
     # 去停用词
     stoplist = set('for a of the and to in'.split())
-    allTexts = [[word for word in text.lower().split() if word not in stoplist]
+    allTexts = [[word for word in text.lower().replace(',','').replace('.','').split() if word not in stoplist]
              for text in all]
     # 去低频词
     k = 2
@@ -117,7 +117,7 @@ def classify_test_21(train_set,train_label,test_set,test_label,reverseVetorize=F
     all.extend(test_set)
     # 去停用词
     stoplist = set('for a of the and to in'.split())
-    allTexts = [[word for word in text.lower().split() if word not in stoplist]
+    allTexts = [[word for word in text.lower().replace(',','').replace('.','').split() if word not in stoplist]
              for text in all]
     # 去低频词
     k = 2
@@ -159,7 +159,7 @@ def classify_test_22(train_set,train_label,test_set,test_label,reverseVetorize=F
     all.extend(test_set)
     # 去停用词
     stoplist = set('for a of the and to in'.split())
-    allTexts = [[word for word in text.lower().split() if word not in stoplist]
+    allTexts = [[word for word in text.lower().replace(',','').replace('.','').split() if word not in stoplist]
              for text in all]
     # 去低频词
     k = 2

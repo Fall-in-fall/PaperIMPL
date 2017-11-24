@@ -13,31 +13,35 @@ from datetime import datetime
 class TASC:
     instance_addr = ''
     para_w = [1,1,1]
-
+    vecModel_addr = ''
     # 初始化，读取样本库特征文件
-    def __init__(self,instance_addr='G:/data collection/TTSC/TTSC-paper data/processed Amazon Review Data/10w_sample_review_no3.txt',
-                 vecModelAddr= 'G:/data collection/TTSC/TTSC-paper data/Word vector data/vectors/glove.twitter.27B/word2vec_glove.twitter.27B.100d.txt',
+    def __init__(self,instance_addr='../data/out_domain/10000_review_no3.txt.gz',
+                 vecModel_addr='../data/word_vector_data/word2vec_glove.twitter.27B.100d.txt',
                  para_w = [1,1,1] ):
         self.instance_addr = instance_addr
-        self.vecModelAddr = vecModelAddr
+        self.vecModel_addr = vecModel_addr
         self.allTermDict,self.gensimDict,self.allSourceDict = load_feature(self.instance_addr)
-        self.vecModel = KeyedVectors.load_word2vec_format(self.vecModelAddr ,binary=False)
+        self.vecModel_addr = vecModel_addr
+        self.vecModel = KeyedVectors.load_word2vec_format(vecModel_addr ,binary=False)
         self.para_w = para_w
 
-    def re_init(self,instance_addr='G:/data collection/TTSC/TTSC-paper data/processed Amazon Review Data/10w_sample_review_no3.txt',
-                 vecModelAddr= 'G:/data collection/TTSC/TTSC-paper data/Word vector data/vectors/glove.twitter.27B/word2vec_glove.twitter.27B.100d.txt',
+    def re_init(self,instance_addr='../data/out_domain/10000_review_no3.txt.gz',
+                 vecModel_addr= '../data/word_vector_data/word2vec_glove.twitter.27B.100d.txt',
                  para_w = [1,1,1]):
         self.instance_addr = instance_addr
-        self.vecModelAddr = vecModelAddr
+        self.vecModel_addr = vecModel_addr
         self.allTermDict,self.gensimDict,self.allSourceDict = load_feature(self.instance_addr)
-        self.vecModel = KeyedVectors.load_word2vec_format(self.vecModelAddr ,binary=False)
+        if vecModel_addr!=self.vecModel_addr:
+            self.vecModel_addr = vecModel_addr
+            self.vecModel = KeyedVectors.load_word2vec_format(vecModel_addr ,binary=False)
         self.para_w = para_w
 
     # 给定文件，生成特征
     @staticmethod
-    def gen_featureFile(self,domain_addr,instance_addr,lowFreqK=50):
+    def gen_featureFile(self,domain_addr,instance_addr,vecModel_addr,lowFreqK=50):
         gen_feature(domain_addr=domain_addr,
                     instance_addr=instance_addr,
+                    vecModel_addr=vecModel_addr,
                     lowFreqK=lowFreqK)
 
     # 为特定话题获取筛选数据。返回类型是 DataFrame
@@ -49,7 +53,7 @@ class TASC:
         #     shortlist_num = select_num*autoRatio
 
         firsttime = datetime.now()
-        # 域筛选
+        # 域筛选,正例和负例两组域(两组域有重叠，只是由于不同话题下的文本类别分布不同，要保持1:1比例的话各自筛出来的域数量不同)
         pos_sourceList,neg_sourceList = ranking_source_selector.simple_ranking_selector(targetTopic,targetTextAll,
                                                                     self.allSourceDict, self.gensimDict,shortlist_num,
                                                                      self.vecModel,self.para_w)
@@ -58,10 +62,10 @@ class TASC:
         lenpos = len(pos_sourceList)
         lenneg = len(neg_sourceList)
 
-        print lenpos,lenneg
+        print 'lenpos,lenneg: ',lenpos,lenneg
 
         ready_instances = []
-        if lenpos>lenneg:
+        if lenpos>lenneg: # 两组域前面是重叠的，依次把域中的实例取出来
             for s in range(0,lenpos):
                 ready_instances.extend( [ ins for ins in self.allTermDict[ pos_sourceList[s] ] if ins[0]=='1'] )
                 if s<lenneg:

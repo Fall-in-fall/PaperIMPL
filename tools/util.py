@@ -31,3 +31,6 @@ def dict2matrix(textDict,num_terms):
 # gensim字典形式的特征向量列表转换成vsm稀疏特征矩阵.这个方法貌似有问题，出来的列和行是反的
 def dict2matrix_2(textDict,num_terms):
     corpus2dense(textDict, num_terms)
+
+def processing_with_multithread(theFunc,data,threadNum,keepOrder = True):
+    pass

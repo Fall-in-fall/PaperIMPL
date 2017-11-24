@@ -3,54 +3,73 @@ import re
 import gzip
 import random
 import collections
-# 除去某些列表的评论
-def exceptSomeReview():
-    metapath='G:\\data collection\\TTSC\\TTSC-paper data\\processed Amazon Review Data\\pruned_metadata_exceptSome.txt.gz'
-    reviewpath = 'G:\\data collection\\TTSC\\TTSC-paper data\\processed Amazon Review Data\\pruned_kcore_5.txt.gz'
-    g = gzip.open(metapath, 'r')
-    allAsin = set()
-    countMeta = 0
-    for line in g:
-        countMeta+=1
-        if countMeta % 100000 == 0: print str(countMeta * 100 / 9430088.0) + '%'
-        allAsin.add(line.strip().split('\t')[0])
 
-    rf = file('G:\\data collection\\TTSC\\TTSC-paper data\\processed Amazon Review Data\\pruned_kcore_5_exceptSome.txt', 'w')
+
+# 蓄水池算法采样meta及其评论文本 https://www.iteblog.com/archives/1525.html
+def reservoirSampling(sampleSize ):
+
+    metapath='../data/out_domain/all_meta_no3.txt.gz'
+    reviewpath = '../data/out_domain/all_review_no3.txt.gz'
+
+    rf_meta = gzip.open('../data/out_domain/{}_meta_no3.txt.gz'.format(str(sampleSize)), 'w')
+    rf_review = gzip.open( '../data/out_domain/{}_review_no3.txt.gz'.format(str(sampleSize)), 'w')
+
+    reservoir = ['']*sampleSize
+
+    g = gzip.open(metapath, 'r')
+    count = 0
+    for line in g:
+        if count<sampleSize:
+            reservoir[count] = line.strip()+'\n'
+        else:
+            randNum = random.randint(0,count-1) #randInt是闭区间
+            if randNum<sampleSize:
+                reservoir[randNum] = line.strip()+'\n'
+        count+=1
+    rf_meta.writelines(reservoir)
+    rf_meta.close()
+    reservoir = set([i.split('\t')[0] for i in reservoir])
+    #-------------
     g2 = gzip.open(reviewpath, 'r')
-    countReview = 0
+    count = 0
+    # 如果再次取出掉thescore!=3的，存在可能有些域的实例全部被筛掉了，这些域保存在meta里面就没有意义，
+    # 后续提取的时候也容易出现问题，需要进行判断处理，写完实例后，再写入meta，把不包含实例的meta去掉
+    reviewCount = 0
     for line in g2:
         theasin = line.strip().split('\t')[0]
-        countReview += 1
-        if countReview % 100000 == 0: print str(countReview * 100 /  41135700.0) + '%'
-        if theasin in allAsin:
-            rf.write(line)
-    rf.close()
+        if theasin in reservoir:
+            rf_review.write( line.strip()+'\n' )
+            reviewCount+=1
+        count += 1
+        if count % 100000 == 0:
+            print str(count * 100 / 9307540.0) + '%'
+    rf_review.close()
+    print 'actually meta num and review num: ',len(reservoir),reviewCount
 
-def genSampleData():
-    metapath='G:\\data collection\\TTSC\\TTSC-paper data\\processed Amazon Review Data\\pruned_metadata_exceptSome.txt.gz'
-    reviewpath = 'G:\\data collection\\TTSC\\TTSC-paper data\\processed Amazon Review Data\\pruned_kcore_5_exceptSome.txt.gz'
+# 去除只有三分的meta,整理meta中按'\t'分割含有超过3个的，和评论
+def genDeleteNo3():
+    metapath='../data/out_domain/exceptSome2_pruned_metadata.txt.gz'
+    reviewpath = '../data/out_domain/exceptSome2_pruned_kcore_5.txt.gz'
 
-    rf_meta = file('G:\\data collection\\TTSC\\TTSC-paper data\\processed Amazon Review Data\\50w_sample_meta.txt', 'w')
-    rf_review = file( 'G:\\data collection\\TTSC\\TTSC-paper data\\processed Amazon Review Data\\50w_sample_review_no3.txt', 'w')
+    rf_meta = gzip.open('../data/out_domain/all_meta_no3.txt.gz', 'w')
+    rf_review = gzip.open( '../data/out_domain/all_review_no3.txt.gz', 'w')
 
-    #thelen = len( gzip.open(metapath, 'r').readlines())
-    #print thelen
     g = gzip.open(metapath, 'r')
     sampleAsin = {}
     countMeta = 0
-    aboutMetaCount = 500000
-    sep = 3913493/aboutMetaCount
+    sep = 1
     countWrite = 0
     for line in g:
         countMeta += 1
         linesplit = line.strip().split('\t')
         if len(linesplit)<3: continue
+        if len(linesplit) > 3:
+            write_linesplit = [linesplit[0],' '.join( linesplit[1:-1] ),linesplit[-1] ]
+        else:
+            write_linesplit = linesplit
         if countMeta%sep==0:
             countWrite+=1
-            sampleAsin[linesplit[0]]= [0,line.strip()+'\n']
-            if countWrite > aboutMetaCount-1:
-                print aboutMetaCount
-                break
+            sampleAsin[linesplit[0]]= [0,'\t'.join( write_linesplit )+'\n']
 
     g2 = gzip.open(reviewpath, 'r')
     count = 0
@@ -65,12 +84,12 @@ def genSampleData():
         if theasin in sampleAsinKeySet:
             if thescore!=3:
                 label = '1' if thescore>3 else '0'
-                rf_review.write( '\t'.join([theasin,label,linesplit[2] ])+'\n' )
+                rf_review.write( '\t'.join([theasin,label,linesplit[2].replace('*',' ') ])+'\n' )
                 sampleAsin[theasin][0] += 1
                 reviewCount+=1
         count += 1
         if count % 100000 == 0:
-            print str(count * 100 / 41135700.0) + '%'
+            print str(count * 100 / 19961351.0) + '%'
     metaCount = 0
     for k,v in sampleAsin.iteritems():
         if v[0]>0:
@@ -79,12 +98,22 @@ def genSampleData():
     rf_meta.close()
     print 'actually meta num and review num: ',metaCount,reviewCount
 
-# 去掉只有3分实例的meta后 704494 18219578
-# 不排除部分类别，去掉只有3分实例的meta后，805732 19960376
-# 100w : 200547 5199670
-# 50w : 94971 2472485
+# 排除类别的meta和实例数 2067174，10219594
+# 排除类别并去掉只有3分实例的meta后  331537,9307540
+# 采样10w  100000 2796705
+# 采样5w   50000 1398921
+# 采样1w   10000 274827
+#          200000 5640493
+# 服务器：
+
+
+
 if __name__ == '__main__':
-    genSampleData()
+    #genDeleteNo3()
+    # reservoirSampling(10000)
+    reservoirSampling(200000)
+    pass
+
 
 
 # meta数据格式 ['0001042335', 'Hamlet: Complete &amp; Unabridged', 'Books\r\r\n']

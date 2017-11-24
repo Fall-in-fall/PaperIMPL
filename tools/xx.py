@@ -35,7 +35,7 @@ from pprint import pprint
 pprint(texts)
 
 dictionary=corpora.Dictionary(texts)
-dictionary.save('./tmp/deerwester.dict') #store the dictionary,for future reference
+#dictionary.save('./tmp/deerwester.dict') #store the dictionary,for future reference
 
 print(dictionary)
 print(dictionary.token2id)
@@ -46,7 +46,7 @@ new_vec=dictionary.doc2bow(new_doc.lower().split())
 print(new_vec)
 
 corpus=[dictionary.doc2bow(text) for text in texts]
-corpora.MmCorpus.serialize('./tmp/deerwester.mm',corpus) #store to dist,for later use
+#corpora.MmCorpus.serialize('./tmp/deerwester.mm',corpus) #store to dist,for later use
 pprint(corpus)
 
 
