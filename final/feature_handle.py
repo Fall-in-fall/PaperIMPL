@@ -135,6 +135,12 @@ def gen_feature(domain_addr = '../data/out_domain/100000_meta_no3.txt.gz',
 
     # model.wv['apple']: array([...,...])
 
+def add_feature(domain_addr = '../data/out_domain/100000_meta_no3.txt.gz',
+                instance_addr = '../data/out_domain/100000_review_no3.txt.gz',
+                vecModel_addr = '../data/word_vector_data/word2vec_glove.twitter.27B.100d.txt',
+                lowFreqK = 10):
+    pass
+
 def load_feature(instance_addr):
     allTermDict = cPickle.load(file(instance_addr+'_allTermDict','r')) # { asin: [ [label,text],...  ]  }
     gensimDict = cPickle.load(file(instance_addr+'_gensimDict','r'))# corpora.Dictionary.load(instance_addr+'_gensimDict')

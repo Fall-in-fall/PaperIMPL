@@ -1,7 +1,7 @@
 # -*- encoding:utf-8 -*-
 from final import TASC,feature_handle
 from sentiment_classify_method import ngram_sa_method
-from experiment.expl_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
+from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
 
 # 话题数据间互相训练测试
 def topic_2_topic():

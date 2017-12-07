@@ -16,16 +16,16 @@ def twitterData():
     #                      names=['topic', 'label', 'id', 'text'], delimiter="\t", quoting=3)
     # --------------
     sent140_topic = ['kindle2','nike','dentist']
-    sts_topic = ['iphone','ipod','england','london']
+    sts_topic = ['iphone','ipod','england','london','facebook']
     for i in sent140_topic:
         res = sent140[sent140['topic'] == i]
         if i =='kindle2':
             res['topic']='kindle'
             i='kindle'
-        to_thecsv(res ,'../data/topic/shortlist_twitter/'+ i +'.txt_')
+        to_thecsv(res ,'../data/topic/shortlist/shortlist_twitter/'+ i +'.txt_')
     for j in sts_topic:
         res = stsent[stsent['topic'] == j]
-        to_thecsv( res , '../data/topic/shortlist_twitter/' + j + '.txt_')
+        to_thecsv( res , '../data/topic/shortlist/shortlist_twitter/' + j + '.txt_')
     #se2016_topic = ['Atheism']
 
 def to_thecsv(df,fname):

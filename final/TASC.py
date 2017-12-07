@@ -62,7 +62,7 @@ class TASC:
         lenpos = len(pos_sourceList)
         lenneg = len(neg_sourceList)
 
-        print 'lenpos,lenneg: ',lenpos,lenneg
+        print 'lenpossource,lennegsource: ',lenpos,lenneg
 
         ready_instances = []
         if lenpos>lenneg: # 两组域前面是重叠的，依次把域中的实例取出来

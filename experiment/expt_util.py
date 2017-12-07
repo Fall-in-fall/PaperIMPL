@@ -1,5 +1,5 @@
 # -*- encoding:utf-8 -*-
-from bs4 import BeautifulSoup
+
 from nltk.corpus import stopwords
 import pandas as pd
 import numpy as np
@@ -11,8 +11,9 @@ from sklearn.svm import SVC
 from sklearn.utils import shuffle
 from gensim import corpora
 from collections import defaultdict
-from sklearn.metrics import accuracy_score,recall_score,f1_score,confusion_matrix
+from sklearn.metrics import accuracy_score,precision_score,recall_score,f1_score,confusion_matrix
 import os
+import gzip
 
 from tools.util import dict2matrix
 
@@ -23,21 +24,30 @@ from tools.util import dict2matrix
 # import sys; print('Python %s on %s' % (sys.version, sys.platform))
 # sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])
 
-
-def readTopicData(topicDataDir  = 'G:/data collection/TTSC/TTSC-paper data/experiment collection/try data/topic data' ):
+def readTopicData(topicDataDir  = '../data/topic/final' ):
     topicFileList = os.listdir(topicDataDir)
+    print 'topicFileList',topicFileList
     dataDict = defaultdict(pd.DataFrame)
     for f in topicFileList:
-        if f[-1:] =='_':
-            theData = pd.read_csv(topicDataDir+'/'+f, names=['label', 'text'], delimiter='\t', quoting=3)
-            theData['label'] = theData['label'].astype(np.int64)
-            keyName = f.split('.')[0] if f.__contains__('.') else f
-            dataDict[keyName] = theData
+        if f[0] =='_' and f[-1] =='_':
+            theData = pd.read_csv(topicDataDir+'/'+f, names=['topic','label', 'text'], delimiter='\t', quoting=3)
+            #theData['label'] = theData['label'].astype(np.int64)
+            keyName = f.split('.')[0][1:] if f.__contains__('.') else f
+            dataDict[keyName] = theData[['label','text']]
     return dataDict
 
-def readNonTopicText(addr = 'G:/data collection/TTSC/TTSC-paper data/experiment collection/try data/nontopicTrain.txt'):
-    return pd.read_csv(addr, names=['label', 'text'], delimiter="\t", quoting=3)
+# 把所有topic文件放到一个file里面，直接读取再按名字放入字典
+def readTopicData_final(topicDataFile  = '../data/topic/all_topic.txt' ):
 
+    dataDict = defaultdict(pd.DataFrame)
+
+    return dataDict
+
+def readNonTopicText(addr = '../data/non_topic/nontopicTrain.txt'):
+    #res = pd.read_csv(addr, names=['topic','label','id', 'text'], delimiter="\t", quoting=3)
+    res = pd.read_csv(addr, names=['label','text'], delimiter='\t', quoting=3)
+    #res['label'] = res['label'].replace(['negative', 'positive'], [0, 1])
+    return res
 def readRandom(addr = 'G:/data collection/TTSC/TTSC-paper data/experiment collection/try data/randomTrans.txt'):
     pass
 # 如果 outTrain 和 target 一样(同一个引用)，就认为是in domain test，则对其按比例随机划分训练集和测试集，
@@ -78,7 +88,7 @@ def classificationTest(train_set,train_label,test_set,test_label,lowFreqK=2,clas
     all.extend(test_set)
     # 去停用词
     stoplist = set('for a of the and to in'.split())
-    allTexts = [[word for word in text.lower().split() if word not in stoplist]
+    allTexts = [[word for word in text.lower().replace(',','').replace('.','').split() if word not in stoplist]
              for text in all]
     # 去低频词
     frequency = defaultdict(int)
@@ -101,16 +111,30 @@ def classificationTest(train_set,train_label,test_set,test_label,lowFreqK=2,clas
     result = classifier.predict(test_data_features)
 
     printlabels = [1, 0]  # 这个要对应实际的类别类型
-    res = [accuracy_score(test_label, result),recall_score(test_label, result),f1_score(test_label, result),confusion_matrix(test_label, result,labels=printlabels)]
+    res = [ accuracy_score(test_label, result),
+            precision_score(test_label, result, pos_label=1),
+            precision_score(test_label, result, pos_label=0),
+            recall_score(test_label, result, pos_label=1),
+            recall_score(test_label, result, pos_label=0),
+            f1_score(test_label, result, pos_label=1),
+            f1_score(test_label, result, pos_label=0)
+            ]
+            #confusion_matrix(test_label, result,labels=printlabels)]
     return res
-
-
 
 def drawHistogram(titleList,data):
     pass
 
-def saveResult(data):
-    pass
+def saveResult(resDict,save_addr):
+    saveFile = file(save_addr,'w')
+    for k,v in resDict.iteritems():
+        saveFile.write( str(k)+'\t'+
+                        '\t'.join( [str(v[0]),str(v[1]),str(v[2])] )+'\n'
+                        )
+    # saveFile.write('***\n')
+    # for k,v in resDict.iteritems():
+    #     saveFile.write( str(k)+'\t'+str(v[3])+'\n' )
+    saveFile.close()
 
 def oneTest():
     pass
