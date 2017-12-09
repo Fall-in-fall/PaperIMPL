@@ -4,6 +4,7 @@ from final.feature_handle import Source
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 import pandas as pd
+import datetime
 #from sentiment_classify_method import ngram_sa_method
 from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
 
@@ -67,7 +68,8 @@ print resDict_tasc1
 print resDict_tasc2
 
 allres = { 'resDict_non2topic':resDict_non2topic,'resDict_tasc1':resDict_tasc1, 'resDict_tasc2':resDict_tasc2}
-saveResult(allres, save_addr=topic_addr + '/result/' + 'tempresult.txt')
+datestr = datetime.datetime.now().strftime('%y_%m_%d_%M_%S')
+saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_res.txt')
 #print resDict_tasc2
 #saveResult(resDict_non2topic,saveAddr = topic_addr+'/result/'+'non2topic.txt')
 #saveResult(resDict_tasc1,saveAddr = topic_addr+'/result/'+str(size)+'_TASC_topic_mix.txt')

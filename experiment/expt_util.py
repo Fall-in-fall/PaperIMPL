@@ -127,10 +127,11 @@ def drawHistogram(titleList,data):
 
 def saveResult(resDict,save_addr):
     saveFile = file(save_addr,'w')
-    for k,v in resDict.iteritems():
-        saveFile.write( str(k)+'\t'+
-                        '\t'.join( [str(v[0]),str(v[1]),str(v[2])] )+'\n'
-                        )
+    for k,v1 in resDict.iteritems():
+        saveFile.write(str(k)+'\n')
+        for k2,v2 in v1.iteritems():
+            saveFile.write(str(k2)+',')
+            saveFile.write( ','.join( [str( round(i,6) ) for i in v2] )+'\n' )
     # saveFile.write('***\n')
     # for k,v in resDict.iteritems():
     #     saveFile.write( str(k)+'\t'+str(v[3])+'\n' )
