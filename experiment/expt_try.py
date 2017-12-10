@@ -67,9 +67,21 @@ print resDict_non2topic
 print resDict_tasc1
 print resDict_tasc2
 
-allres = { 'resDict_non2topic':resDict_non2topic,'resDict_tasc1':resDict_tasc1, 'resDict_tasc2':resDict_tasc2}
+
 datestr = datetime.datetime.now().strftime('%y_%m_%d_%M_%S')
-saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_res.txt')
+
+def getAVGRes(x):
+    return [  sum( [v[i] for v in x.items()] )/len(topicData) for i in range(0,7)]
+
+avgRes = { 'resDict_non2topic':getAVGRes(resDict_non2topic),
+           'resDict_tasc1':getAVGRes(resDict_tasc1),
+           'resDict_tasc2':getAVGRes(resDict_tasc2)
+           }
+allres = { 'resDict_non2topic':resDict_non2topic,'resDict_tasc1':resDict_tasc1, 'resDict_tasc2':resDict_tasc2,
+           'avgRes':avgRes}
+
+saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_allres.txt')
+
 #print resDict_tasc2
 #saveResult(resDict_non2topic,saveAddr = topic_addr+'/result/'+'non2topic.txt')
 #saveResult(resDict_tasc1,saveAddr = topic_addr+'/result/'+str(size)+'_TASC_topic_mix.txt')

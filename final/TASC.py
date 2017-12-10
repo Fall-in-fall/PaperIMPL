@@ -110,7 +110,10 @@ class TASC:
         # 3、按名字地址读取其相应的instance，传入instance_selector
         # 4、instance_selector通过聚类过滤获取select_num个实例
         # 5、返回获取的实例
+    def get_instance_random(self):
+        randomSourceList = allTermDict
 
+        pass
 if __name__ == '__main__':
     # targetTopic = 'apple'
     # targetTextAll = ['Just apply for a job at @Apple, hope they call me lol',
