@@ -71,7 +71,7 @@ print resDict_tasc2
 datestr = datetime.datetime.now().strftime('%y_%m_%d_%M_%S')
 
 def getAVGRes(x):
-    return [  sum( [v[i] for v in x.items()] )/len(topicData) for i in range(0,7)]
+    return [  sum( [v[i] for v in x.values()] )/len(topicData) for i in range(0,7)]
 
 avgRes = { 'resDict_non2topic':getAVGRes(resDict_non2topic),
            'resDict_tasc1':getAVGRes(resDict_tasc1),
