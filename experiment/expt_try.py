@@ -79,7 +79,7 @@ avgRes = { 'resDict_non2topic':getAVGRes(resDict_non2topic),
            }
 allres = { 'resDict_non2topic':resDict_non2topic,'resDict_tasc1':resDict_tasc1, 'resDict_tasc2':resDict_tasc2,
            'avgRes':avgRes}
-
+print avgRes
 saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_allres.txt')
 
 #print resDict_tasc2
