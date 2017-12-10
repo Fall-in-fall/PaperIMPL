@@ -46,8 +46,7 @@ class TASC:
 
     # 为特定话题获取筛选数据。返回类型是 DataFrame
     def get_instance_TASC(self,targetTopic,targetTextAll,select_num, shortlist_num,pos_neg_ratio = 1,autoRatio = 0):
-        print  'TASC getting instances for topic "{}", by set select_num={},shortlist_num = {},'\
-            .format(targetTopic,select_num,shortlist_num)
+        print  'TASC getting instances for topic "{}" ' .format(targetTopic,select_num,shortlist_num) # by set select_num={},shortlist_num = {},'\
         # if autoRatio>1:
         #     select_num = len(targetTextAll)*autoRatio
         #     shortlist_num = select_num*autoRatio
