@@ -61,7 +61,7 @@ class TASC:
         lenpos = len(pos_sourceList)
         lenneg = len(neg_sourceList)
 
-        print 'lenpossource,lennegsource: ',lenpos,lenneg
+        #print 'lenpossource,lennegsource: ',lenpos,lenneg
 
         ready_instances = []
         if lenpos>lenneg: # 两组域前面是重叠的，依次把域中的实例取出来
@@ -74,7 +74,7 @@ class TASC:
                 ready_instances.extend( [ ins for ins in self.allTermDict[ neg_sourceList[s] ] if ins[0]=='0'] )
                 if s<lenpos:
                     ready_instances.extend( [ ins for ins in self.allTermDict[ pos_sourceList[s] ] if ins[0]=='1'] )
-        print 'len(ready_instances): ',len(ready_instances)
+        #print 'len(ready_instances): ',len(ready_instances)
         df_source = pd.DataFrame(ready_instances,columns=['label','text'])
         df_source['label'] = df_source['label'].astype(np.int64)
         df_target = pd.DataFrame(targetTextAll,columns=['text'])
