@@ -227,7 +227,7 @@ def loadAndToAllSource(instance_addr):
 
 if __name__ =='__main__':
 
-    fileSizeList = ['all','200000']
+    fileSizeList = ['50000']
     for fileSize in fileSizeList:
         domain_addr = '../data/out_domain/{}_meta_no3.txt.gz'.format(fileSize)
         instance_addr = '../data/out_domain/{}_review_no3.txt.gz'.format(fileSize)

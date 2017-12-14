@@ -41,6 +41,11 @@ def save_pure(fileAddr,newAddr):
     x['label'] = x['label'].replace( ['negative', 'positive'],[0, 1])
     x.to_csv(newAddr, index=False,header = False, sep='\t')
 
+def nontopic(newAddr,sampleSize):
+    non = pd.read_csv('../data/non_topic/_nontopicTrain.txt',names=['topic', 'label', 'id', 'text'], delimiter="\t", quoting=3)
+    non['label'] = non['label'].replace(['negative', 'positive'], [0, 1])
+    non[['label','text']].sample(sampleSize).to_csv('../data/non_topic/{}_nontopicTrain.txt'.format(str(sampleSize)), index=False,header = False, sep='\t')
+
 if __name__ =='__main__':
     twitterData()
     # baseaddr = '../data/topic/'
