@@ -1,43 +1,24 @@
-topic_addr = './data/topic/final'
-topicData = readTopicData(topic_addr)
 
+from sklearn.naive_bayes import MultinomialNB
+import pandas as pd
+import numpy as np
+import datetime
+import os
+from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
+
+nonTopicData = readNonTopicText(addr = '../data/non_topic/10000_nontopicTrain.txt')
+print 'nontopic indomain test'
 resDict_non2topic = {}
-for k, v in topicData.iteritems():
-    print 'test in topic "{}"'.format(k)
-    test_set, test_label = v['text'], v['label']
-    train_set, train_label = nonTopicData['text'], nonTopicData['label']
-    res = classificationTest(train_set, train_label, test_set, test_label,classifier=MultinomialNB())
-    resDict_non2topic[k] = res
+count = 10
+res=np.zeros(7)
+for i in xrange(0,count):
+    train_set, train_label, test_set, test_label = csv_to_train_test(nonTopicData,nonTopicData,ratio=4,times=10)
+    res+=  np.array(classificationTest(train_set, train_label, test_set, test_label,classifier=MultinomialNB()))
+res = res/count
+print res
+datestr = datetime.datetime.now().strftime('%y_%m_%d_%H_%M_%S')
 
-resDict_tasc1 = {}
-size = 1500
-for k, v in topicData.iteritems():
-    print 'test in topic "{}"'.format(k)
-    selected_num = len(v) * 5 if len(v)>size else size*5
-    shortlist_num = selected_num * 2
-    selected_instances = tasc.get_instance_TASC(k, v, selected_num, shortlist_num)
-    print 'len(selected_instances): ',len(selected_instances)
-    test_set, test_label = v['text'],v['label']
-    train_set, train_label =  pd.concat([nonTopicData['text'],selected_instances['text']]), pd.concat([nonTopicData['label'],selected_instances['label']])
-    res = classificationTest(train_set, train_label, test_set, test_label,lowFreqK=10,classifier=MultinomialNB())#
-    resDict_tasc1[k] = res
-
-resDict_tasc2= {}
-for k, v in topicData.iteritems():
-    print 'test in topic "{}"'.format(k)
-    selected_num = len(v) * 5 if len(v) > size else size * 5
-    shortlist_num = selected_num * 2
-    selected_instances = tasc.get_instance_TASC(k, v, selected_num, shortlist_num)
-    print 'len(selected_instances): ',len(selected_instances)
-    test_set, test_label = v['text'], v['label']
-    train_set, train_label = selected_instances['text'], selected_instances['label']
-    res = classificationTest(train_set, train_label, test_set, test_label,lowFreqK=10,classifier = MultinomialNB())
-    resDict_tasc2[k] = res
-
-
-print 'resDict_non2topic'
-print resDict_non2topic
-print 'resDict_tasc2'
-print resDict_tasc2
-print 'resDict_tasc1'
-print resDict_tasc1
+allres = { 'non2non':
+               {'avgRes_{}'.format(str(count)) : res}
+      }
+saveResult(allres, save_addr= '../data/result/' +datestr + '_non2nonRes.txt')

@@ -5,7 +5,6 @@ from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_tes
 
 # 话题数据间互相训练测试
 def topic_2_topic():
-    topic
     resDict = {}
     topicData = readTopicData()
     for k1,v1 in topicData.iteritems():

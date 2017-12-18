@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import MultinomialNB
 import pandas as pd
 import datetime
+import os
 #from sentiment_classify_method import ngram_sa_method
 from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
 
@@ -13,7 +14,7 @@ from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_tes
 topic_addr = '../data/topic/final'
 topicData = readTopicData(topic_addr)
 # ------------ non to topic
-nonTopicData = readNonTopicText(addr = '../data/non_topic/7500_nontopicTrain.txt')
+nonTopicData = readNonTopicText(addr = '../data/non_topic/10000_nontopicTrain.txt')
 resDict_non2topic = {}
 for k, v in topicData.iteritems():
     print 'test in topic "{}"'.format(k)
@@ -34,7 +35,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
 
-resDict_tasc1 = {}
+resDict_mix = {}
 size = 1500
 for k, v in topicData.iteritems():
     print 'test in topic "{}"'.format(k)
@@ -45,9 +46,9 @@ for k, v in topicData.iteritems():
     test_set, test_label = v['text'],v['label']
     train_set, train_label =  pd.concat([nonTopicData['text'],selected_instances['text']]), pd.concat([nonTopicData['label'],selected_instances['label']])
     res = classificationTest(train_set, train_label, test_set, test_label,lowFreqK=10,classifier=MultinomialNB())#
-    resDict_tasc1[k] = res
+    resDict_mix[k] = res
 
-resDict_tasc2= {}
+resDict_transfer= {}
 for k, v in topicData.iteritems():
     print 'test in topic "{}"'.format(k)
     selected_num = len(v) * 5 if len(v) > size else size * 5
@@ -57,44 +58,47 @@ for k, v in topicData.iteritems():
     test_set, test_label = v['text'], v['label']
     train_set, train_label = selected_instances['text'], selected_instances['label']
     res = classificationTest(train_set, train_label, test_set, test_label,lowFreqK=10,classifier = MultinomialNB())
-    resDict_tasc2[k] = res
+    resDict_transfer[k] = res
 
 
 print 'resDict_non2topic'
 print resDict_non2topic
-print 'resDict_tasc2'
-print resDict_tasc2
-print 'resDict_tasc1'
-print resDict_tasc1
+print 'resDict_transfer'
+print resDict_transfer
+print 'resDict_mix'
+print resDict_mix
 
 
-datestr = datetime.datetime.now().strftime('%y_%m_%d_%M_%S')
+datestr = datetime.datetime.now().strftime('%y_%m_%d_%H_%M_%S')
 topicAccuRes = { '*topic':resDict_non2topic.keys(),
                  'resDict_non2topic':[ v[0] for v in resDict_non2topic.values()],
-                 'resDict_tasc1':[ v[0] for v in resDict_tasc1.values()],
-                 'resDict_tasc2':[ v[0] for v in resDict_tasc2.values()]
+                 'resDict_mix':[ v[0] for v in resDict_mix.values()],
+                 'resDict_transfer':[ v[0] for v in resDict_transfer.values()]
             }
 
 def getAVGRes(x):
     return [  sum( [v[i] for v in x.values()] )/len(topicData) for i in range(0,7)]
 
 avgRes = { 'resDict_non2topic':getAVGRes(resDict_non2topic),
-           'resDict_tasc1':getAVGRes(resDict_tasc1),
-           'resDict_tasc2':getAVGRes(resDict_tasc2)
+           'resDict_mix':getAVGRes(resDict_mix),
+           'resDict_transfer':getAVGRes(resDict_transfer)
            }
-allres = { 'resDict_non2topic':resDict_non2topic,'resDict_tasc1':resDict_tasc1, 'resDict_tasc2':resDict_tasc2,
+allres = { 'resDict_non2topic':resDict_non2topic,'resDict_mix':resDict_mix, 'resDict_transfer':resDict_transfer,
            'topicAccuRes':topicAccuRes,
            'avgRes':avgRes
           }
 print topicAccuRes.keys()
-print [ [x[i] for x in topicAccuRes.values()] for i in range(0,len(topicAccuRes.values()[0])) ]
+for line in  [ [x[i] for x in topicAccuRes.values()] for i in range(0,len(topicAccuRes.values()[0])) ]:
+    print line
 print avgRes
+if not os.path.isdir(topic_addr + '/result'):
+   os.mkdir(topic_addr + '/result')
 saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_allres.txt')
 
-#print resDict_tasc2
+#print resDict_transfer
 #saveResult(resDict_non2topic,saveAddr = topic_addr+'/result/'+'non2topic.txt')
-#saveResult(resDict_tasc1,saveAddr = topic_addr+'/result/'+str(size)+'_TASC_topic_mix.txt')
-#saveResult(resDict_tasc2,saveAddr = topic_addr+'/result/'+str(size)+'_TASC_2_topic2.txt')
+#saveResult(resDict_mix,saveAddr = topic_addr+'/result/'+str(size)+'_TASC_topic_mix.txt')
+#saveResult(resDict_transfer,saveAddr = topic_addr+'/result/'+str(size)+'_TASC_2_topic2.txt')
 #----------------------------
 # k='twitter'
 # v=topicData[k]
