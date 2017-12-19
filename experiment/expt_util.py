@@ -119,11 +119,7 @@ def classificationTest(train_set,train_label,test_set,test_label,lowFreqK=2,clas
             f1_score(test_label, result, pos_label=1),
             f1_score(test_label, result, pos_label=0)
             ]
-    # a='[0 1 1 1 1 0 0 0 1 1 1 1 1 0 1 0 0 1 1 1 0 1 0 1 0 0 1 0 1 0 0 1]'
-    # b='[1 1 1 1 1 0 0 1 1 1 0 1 0 1 1 0 1 1 1 1 0 1 0 1 0 0 0 1 1 0 0 1]'
-    # c='[1 1 1 0 0 0 0 1 1 1 0 1 0 1 1 0 0 0 1 1 0 1 0 1 0 0 0 1 0 0 0 1]'
-    # 'london	1	on the train on the way into london to then get another train to see his bestest friend '
-    print result
+    print result.tolist()
     print confusion_matrix(test_label, result,labels=printlabels)
     return res
 

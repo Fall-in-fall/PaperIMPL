@@ -163,7 +163,7 @@ def run_expt(topic_addr = '../data/topic/final',
     saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_allres.txt')
 
 if __name__ =='__main__':
-    run_expt(topic_addr = '../data/topic/final/ultimate5000',
+    run_expt(topic_addr = '../data/topic/final/revise5000',
              non_addr = '../data/non_topic/nontopicTrain.txt',
              size = 1500)
     # run_expt(topic_addr = '../data/topic/final/allfinal',
