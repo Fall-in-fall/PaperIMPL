@@ -6,7 +6,7 @@ import datetime
 import os
 from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
 
-nonTopicData = readNonTopicText(addr = '../data/non_topic/10000_nontopicTrain.txt')
+nonTopicData = readNonTopicText(addr = '../data/non_topic/7500_nontopicTrain.txt')
 print 'nontopic indomain test'
 resDict_non2topic = {}
 count = 10

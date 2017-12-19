@@ -119,7 +119,8 @@ def classificationTest(train_set,train_label,test_set,test_label,lowFreqK=2,clas
             f1_score(test_label, result, pos_label=1),
             f1_score(test_label, result, pos_label=0)
             ]
-    print result.tolist()
+    print result.astype(np.int).tolist()
+    print test_label.astype(np.int).tolist()
     print confusion_matrix(test_label, result,labels=printlabels)
     return res
 
