@@ -24,7 +24,7 @@ from tools.util import dict2matrix
 # import sys; print('Python %s on %s' % (sys.version, sys.platform))
 # sys.path.extend([WORKING_DIR_AND_PYTHON_PATHS])
 
-def readTopicData(topicDataDir  = '../data/topic/final' ):
+def readTopicData(topicDataDir  = './data/topic/all_test_topicData/single'):
     topicFileList = os.listdir(topicDataDir)
     print 'topicFileList',topicFileList
     dataDict = defaultdict(pd.DataFrame)
@@ -36,11 +36,22 @@ def readTopicData(topicDataDir  = '../data/topic/final' ):
             dataDict[keyName] = theData[['label','text']]
     return dataDict
 
+def single2OneFile(topicDataDir  = '../data/topic/all_test_topicData/single'):
+    newAddr = './data/topic/all_test_topicData/all_topic.csv'
+    topicFileList = os.listdir(topicDataDir)
+    newFile = file(newAddr,'w')
+    for f in topicFileList:
+        if f[0] =='_' and f[-1] =='_':
+            newFile.write(open(topicDataDir+'/'+f,'r').read())
+    newFile.close()
+
 # 把所有topic文件放到一个file里面，直接读取再按名字放入字典
-def readTopicData_final(topicDataFile  = '../data/topic/all_topic.txt' ):
-
+def readTopicData_final(topicDataFile  = '../data/topic/all_test_topicData/all_topic.csv' ):
+    allData = pd.read_csv(topicDataFile, names=['topic','label', 'text'], delimiter='\t', quoting=3)
     dataDict = defaultdict(pd.DataFrame)
-
+    for t in allData['topic'].unique():
+            theData = allData[allData['topic']==t]
+            dataDict[t.lower()] = theData[['label','text']]
     return dataDict
 
 def readNonTopicText(addr = '../data/non_topic/nontopicTrain.txt'):
@@ -119,9 +130,9 @@ def classificationTest(train_set,train_label,test_set,test_label,lowFreqK=2,clas
             f1_score(test_label, result, pos_label=1),
             f1_score(test_label, result, pos_label=0)
             ]
-    print result.astype(np.int).tolist()
-    print test_label.astype(np.int).tolist()
-    print confusion_matrix(test_label, result,labels=printlabels)
+    #print result.astype(np.int).tolist()
+    #print test_label.astype(np.int).tolist()
+    #print confusion_matrix(test_label, result,labels=printlabels)
     return res
 
 def drawHistogram(titleList,data):

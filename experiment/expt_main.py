@@ -11,7 +11,7 @@ import datetime
 import os
 import numpy as np
 #from sentiment_classify_method import ngram_sa_method
-from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
+from experiment.expt_util import readTopicData,readTopicData_final,readNonTopicText,csv_to_train_test,classificationTest,saveResult
 
 # 这里放在console执行时，要显示设置路径。console设置的默认当前路径是项目所在路径而不是py文件路径
 def run(instance_addr = './data/out_domain/all_review_no3.txt.gz',
@@ -20,7 +20,7 @@ def run(instance_addr = './data/out_domain/all_review_no3.txt.gz',
                  topic_addr = './data/topic/final'):
 
 
-    topicData = readTopicData(topic_addr)
+    topicData = readTopicData_final()
     # ------------ non to topic
     nonTopicData = readNonTopicText(addr = './data/non_topic/nontopicTrain.txt')
     resDict_non2topic = {}
@@ -83,10 +83,12 @@ def run_indomain():
           }
     saveResult(allres, save_addr= '../data/result/' +datestr + '_non2nonres.txt')
 
-def run_expt(topic_addr = '../data/topic/final',
+def run_expt_final(topicDataFile  = '../data/topic/all_test_topicData/all_topic.csv',
              non_addr = '../data/non_topic/nontopicTrain.txt',
+             result_addr = '../data/result/all',
              size = 1500):
-    topicData = readTopicData(topic_addr)
+    #topicData = readTopicData('../data/topic/all_test_topicData/single')
+    topicData = readTopicData_final(topicDataFile  = topicDataFile )
     # ------------ non to topic
     nonTopicData = readNonTopicText(addr=non_addr)
     print 'nontopic test'
@@ -159,12 +161,12 @@ def run_expt(topic_addr = '../data/topic/final',
     for line in  [ [x[i] for x in topicAccuRes.values()] for i in range(0,len(topicAccuRes.values()[0])) ]:
         print line
     print avgRes
-    if not os.path.isdir(topic_addr + '/result'):
-        os.mkdir(topic_addr + '/result')
-    saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_allres.txt')
+    if not os.path.isdir(result_addr):
+        os.mkdir(result_addr)
+    saveResult(allres, save_addr=result_addr  +datestr + '_allres.txt')
 
 if __name__ =='__main__':
-    run_indomain()
+    run_expt_final()
     # run_expt(topic_addr = '../data/topic/final/revise5000',
     #          non_addr = '../data/non_topic/nontopicTrain.txt',
     #          size = 1500)
