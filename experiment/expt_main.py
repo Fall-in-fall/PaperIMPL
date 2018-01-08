@@ -9,6 +9,7 @@ from sklearn.naive_bayes import MultinomialNB
 import pandas as pd
 import datetime
 import os
+import numpy as np
 #from sentiment_classify_method import ngram_sa_method
 from experiment.expt_util import readTopicData,readNonTopicText,csv_to_train_test,classificationTest,saveResult
 
@@ -66,13 +67,13 @@ def run(instance_addr = './data/out_domain/all_review_no3.txt.gz',
     print resDict_tasc_trans
     print resDict_tasc_mix
 def run_indomain():
-    nonTopicData = readNonTopicText(addr = '../data/non_topic/10000_nontopicTrain.txt')
+    nonTopicData = readNonTopicText(addr = '../data/non_topic/7500_nontopicTrain.txt')
     print 'nontopic indomain test'
     resDict_non2topic = {}
     count = 10
     res=np.zeros(7)
     for i in xrange(0,count):
-        train_set, train_label, test_set, test_label = csv_to_train_test(nonTopicData,nonTopicData,ratio=4,times=10)
+        train_set, train_label, test_set, test_label = csv_to_train_test(nonTopicData,nonTopicData,ratio=10,times=10)
         res+=  np.array(classificationTest(train_set, train_label, test_set, test_label,classifier=MultinomialNB()))
     print res/count
     datestr = datetime.datetime.now().strftime('%y_%m_%d_%H_%M_%S')
@@ -163,9 +164,10 @@ def run_expt(topic_addr = '../data/topic/final',
     saveResult(allres, save_addr=topic_addr + '/result/' +datestr + '_allres.txt')
 
 if __name__ =='__main__':
-    run_expt(topic_addr = '../data/topic/final/revise5000',
-             non_addr = '../data/non_topic/nontopicTrain.txt',
-             size = 1500)
+    run_indomain()
+    # run_expt(topic_addr = '../data/topic/final/revise5000',
+    #          non_addr = '../data/non_topic/nontopicTrain.txt',
+    #          size = 1500)
     # run_expt(topic_addr = '../data/topic/final/allfinal',
     #          non_addr = '../data/non_topic/15000_nontopicTrain.txt',
     #          size = 1500)
