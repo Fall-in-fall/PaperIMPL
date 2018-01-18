@@ -102,8 +102,8 @@ def run_expt_final(topicDataFile  = '../data/topic/all_test_topicData/all_topic.
 
     # 这里放在console执行时，要显示设置路径。console设置的默认当前路径是项目所在路径而不是py文件路径
 
-    tasc = TASC(instance_addr='../data/out_domain/10000_review_no3.txt.gz',
-                 vecModel_addr='../data/word_vector_data/word2vec_glove.twitter.27B.100d.txt')
+    tasc = TASC(instance_addr='../data/out_domain/test_review_no3.txt.gz',
+                 vecModel_addr='../data/word_vector_data/word2vec_.twitter.27B.100d.txt')
 
     # tasc.get_instance_TASC('apple',topicData['pure_dealed2016all'],10000,15000)
     print 'mix test'
@@ -114,7 +114,7 @@ def run_expt_final(topicDataFile  = '../data/topic/all_test_topicData/all_topic.
         selected_num = len(v) * 5 if len(v)>size else size*5
         shortlist_num = selected_num * 2
         selected_instances = tasc.get_instance_TASC(k, v, selected_num, shortlist_num)
-        print 'len(selected_instances): ',len(selected_instances)
+        #print 'len(selected_instances): ',len(selected_instances)
         test_set, test_label = v['text'],v['label']
         train_set, train_label =  pd.concat([nonTopicData['text'],selected_instances['text']]), pd.concat([nonTopicData['label'],selected_instances['label']])
         res = classificationTest(train_set, train_label, test_set, test_label,lowFreqK=10,classifier=MultinomialNB())#
@@ -126,7 +126,7 @@ def run_expt_final(topicDataFile  = '../data/topic/all_test_topicData/all_topic.
         selected_num = len(v) * 5 if len(v) > size else size * 5
         shortlist_num = selected_num * 2
         selected_instances = tasc.get_instance_TASC(k, v, selected_num, shortlist_num)
-        print 'len(selected_instances): ',len(selected_instances)
+        #print 'len(selected_instances): ',len(selected_instances)
         test_set, test_label = v['text'], v['label']
         train_set, train_label = selected_instances['text'], selected_instances['label']
         res = classificationTest(train_set, train_label, test_set, test_label,lowFreqK=10,classifier = MultinomialNB())
